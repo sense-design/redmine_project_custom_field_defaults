@@ -1,0 +1,14 @@
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Ruby / bundler
+*.gem
+.bundle/
+
+# Logs
+*.log

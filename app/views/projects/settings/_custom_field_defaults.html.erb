@@ -1,0 +1,57 @@
+<%
+  # Multi value fields are excluded: Redmine stores one custom value row per
+  # selected value, and a single stored default cannot express that.
+  fields = @project.all_issue_custom_fields.sorted.reject(&:multiple?)
+
+  # Carrier issue so that formats depending on the project (versions, users,
+  # nested lists) render the correct set of options.
+  carrier = Issue.new(project: @project)
+%>
+
+<%= form_tag(project_custom_field_defaults_path(@project), method: :patch) do %>
+  <% if fields.empty? %>
+    <p class="nodata"><%= l(:text_custom_field_defaults_no_fields) %></p>
+  <% else %>
+    <table class="list">
+      <thead>
+      <tr>
+        <th><%= l(:label_custom_field_plural) %></th>
+        <th><%= l(:field_field_format) %></th>
+        <th><%= l(:label_custom_field_default_value) %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% fields.each do |field| %>
+        <%
+          own       = @project.own_custom_field_default(field)
+          effective = @project.effective_custom_field_default(field)
+
+          # Build the widget first, then assign the stored value explicitly.
+          # Assigning afterwards overrides whatever the default mechanism
+          # filled in during initialization, so an empty input really means
+          # "no own default" and inheritance stays intact.
+          custom_value = CustomValue.new(customized: carrier, custom_field: field)
+          custom_value.value = own&.value.to_s
+        %>
+        <tr>
+          <td><%= field.name %></td>
+          <td><%= l(field.format.label) %></td>
+          <td>
+            <%= custom_field_tag :defaults, custom_value %>
+            <% if own.nil? && effective.present? %>
+              <em class="info">
+                <%= l(:text_custom_field_default_inherited,
+                      project: effective.project.name,
+                      value:   format_object(effective.custom_field.cast_value(effective.value), false)) %>
+              </em>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+    <p><%= submit_tag l(:button_save) %></p>
+    <p><em class="info"><%= l(:text_custom_field_defaults_hint) %></em></p>
+  <% end %>
+<% end %>

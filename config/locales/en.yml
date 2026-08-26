@@ -1,0 +1,6 @@
+en:
+  label_custom_field_defaults: "Default values"
+  label_custom_field_default_value: "Default value"
+  text_custom_field_defaults_no_fields: "No issue custom fields are enabled for this project."
+  text_custom_field_defaults_hint: "A default is only applied when a new issue is created and can be changed on the issue at any time. Leave a field empty to inherit the value of the parent project."
+  text_custom_field_default_inherited: "Inherited from %{project}: %{value}"

@@ -1,0 +1,6 @@
+de:
+  label_custom_field_defaults: "Vorgabewerte"
+  label_custom_field_default_value: "Vorgabewert"
+  text_custom_field_defaults_no_fields: "Für dieses Projekt sind keine Ticket-Felder aktiviert."
+  text_custom_field_defaults_hint: "Ein Vorgabewert wird nur beim Anlegen eines neuen Tickets gesetzt und kann im Ticket jederzeit geändert werden. Lasse ein Feld leer, um den Wert des übergeordneten Projekts zu übernehmen."
+  text_custom_field_default_inherited: "Geerbt von %{project}: %{value}"
