@@ -4,6 +4,32 @@
 # so files below lib/redmine_project_custom_field_defaults/ must follow the
 # standard constant naming convention.
 module RedmineProjectCustomFieldDefaults
+  # Prepends the patches onto their target classes.
+  #
+  # Called both immediately when the plugin loads and from to_prepare: on
+  # this install, other plugins' to_prepare callbacks apparently prevent
+  # ours from ever running automatically, so the immediate call is what
+  # actually makes the plugin work in production. to_prepare is kept as a
+  # second attempt for development mode, where classes are reloaded between
+  # requests. The included_modules guards make calling this twice harmless.
+  def self.apply_patches
+    unless Project.included_modules.include?(ProjectPatch)
+      Project.prepend ProjectPatch
+    end
+
+    unless CustomField.included_modules.include?(CustomFieldPatch)
+      CustomField.prepend CustomFieldPatch
+    end
+
+    unless CustomValue.included_modules.include?(CustomValuePatch)
+      CustomValue.prepend CustomValuePatch
+    end
+
+    unless ProjectsHelper.included_modules.include?(ProjectsHelperPatch)
+      ProjectsHelper.prepend ProjectsHelperPatch
+    end
+  end
+
   # Checks a stored default against the target field's own validation.
   #
   # This is used as a safety net when the value is applied to a new issue: if

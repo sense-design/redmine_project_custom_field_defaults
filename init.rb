@@ -1,28 +1,17 @@
 require 'redmine'
 
 Redmine::Plugin.register :redmine_project_custom_field_defaults do
-  name        'Project Custom Field Defaults'
-  author      'Sven'
+  name 'Project Custom Field Defaults'
+  author 'Sven Culley'
   description 'Per project default values for issue custom fields, inherited along the project tree and freely overridable on the issue.'
-  version     '1.0.0'
-  url         'https://sense-design.de'
+  version '1.0.0'
+  url 'https://github.com/sense-design/redmine_project_custom_field_defaults'
+  author_url 'https://www.linkedin.com/in/sven-culley'
   requires_redmine version_or_higher: '6.0.0'
 end
 
+RedmineProjectCustomFieldDefaults.apply_patches
+
 Rails.application.config.to_prepare do
-  unless Project.included_modules.include?(RedmineProjectCustomFieldDefaults::ProjectPatch)
-    Project.prepend RedmineProjectCustomFieldDefaults::ProjectPatch
-  end
-
-  unless CustomField.included_modules.include?(RedmineProjectCustomFieldDefaults::CustomFieldPatch)
-    CustomField.prepend RedmineProjectCustomFieldDefaults::CustomFieldPatch
-  end
-
-  unless CustomValue.included_modules.include?(RedmineProjectCustomFieldDefaults::CustomValuePatch)
-    CustomValue.prepend RedmineProjectCustomFieldDefaults::CustomValuePatch
-  end
-
-  unless ProjectsHelper.included_modules.include?(RedmineProjectCustomFieldDefaults::ProjectsHelperPatch)
-    ProjectsHelper.prepend RedmineProjectCustomFieldDefaults::ProjectsHelperPatch
-  end
+  RedmineProjectCustomFieldDefaults.apply_patches
 end
