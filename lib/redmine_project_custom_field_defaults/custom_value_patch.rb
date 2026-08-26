@@ -1,25 +1,26 @@
 module RedmineProjectCustomFieldDefaults
   # Prefills the value when a custom value is built for a new issue.
   #
-  # Redmine runs set_default_value as an after_initialize callback. At that
-  # point the issue and its project are already assigned, which makes this the
-  # natural place to inject a project specific default.
-  #
-  # The value is only ever written when the field is still blank, and calling
-  # super afterwards keeps the global default of the custom field as the last
-  # fallback. Nothing here touches existing issues: the guard requires both the
-  # custom value and its customized object to be new records.
+  # Overrides initialize directly instead of hooking into an
+  # after_initialize callback: on Redmine 7, CustomValue no longer
+  # registers set_default_value (or any other method) as an
+  # after_initialize/after_find callback, so patching that method has no
+  # effect there. initialize is always invoked for `.new`, regardless of
+  # what Rails' callback registry looks like in a given version, and is
+  # never called when an existing row is loaded from the database (Rails
+  # uses instantiate for that), so existing issues stay untouched exactly
+  # as before.
   module CustomValuePatch
-    private
+    def initialize(*args, &block)
+      super
 
-    def set_default_value
       if new_record? && custom_field && value.blank? &&
          (customized.nil? || customized.new_record?)
         apply_project_default
       end
-
-      super
     end
+
+    private
 
     def apply_project_default
       return unless custom_field.is_a?(IssueCustomField)
