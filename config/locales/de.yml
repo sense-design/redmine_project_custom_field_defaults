@@ -4,3 +4,8 @@ de:
   text_custom_field_defaults_no_fields: "Für dieses Projekt sind keine Ticket-Felder aktiviert."
   text_custom_field_defaults_hint: "Ein Vorgabewert wird nur beim Anlegen eines neuen Tickets gesetzt und kann im Ticket jederzeit geändert werden. Lasse ein Feld leer, um den Wert des übergeordneten Projekts zu übernehmen."
   text_custom_field_default_inherited: "Geerbt von %{project}: %{value}"
+  label_custom_field_default_locked: "Gesperrt"
+  text_custom_field_default_locked_inherited: "Gesperrt (geerbt)"
+  text_custom_field_default_locked_hint: "Ein gesperrtes Feld kann im Ticket nicht mehr geändert werden, außer von Benutzern mit der Berechtigung „Gesperrte Projekt-Vorgabewerte überschreiben“."
+  text_custom_field_default_locked_requires_value: "Zum Sperren eines Feldes muss ein Vorgabewert angegeben werden."
+  permission_override_locked_project_custom_field_defaults: "Gesperrte Projekt-Vorgabewerte überschreiben"

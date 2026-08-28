@@ -20,6 +20,14 @@ no change to existing issues.
 - If a custom field's configuration changes later in a way that makes a
   stored default invalid (e.g. a list value was removed), the default is
   silently ignored instead of making the issue unsavable.
+- A default can be **locked**. While locked, the field is hidden from the
+  issue's new/edit form (it stays visible read-only wherever the issue is
+  shown) exactly like a workflow-readonly field, so its value can no longer
+  be changed — except by users who hold the new *Override locked project
+  custom field defaults* permission. A lock is only meaningful together
+  with a value, so a field can't be locked while blank. Like the value
+  itself, the lock is inherited: a subproject without its own row for that
+  field uses the nearest ancestor's lock state.
 
 ## Installation
 
@@ -39,6 +47,10 @@ touch tmp/restart.txt   # or restart Passenger/Puma
 
 Permission: the tab is bound to the standard `edit_project` permission,
 no additional role configuration is needed.
+
+To let specific roles keep editing a locked field, grant them the
+*Override locked project custom field defaults* permission on the
+Administration → Roles and permissions page.
 
 ## Uninstallation
 

@@ -28,6 +28,10 @@ module RedmineProjectCustomFieldDefaults
     unless ProjectsHelper.included_modules.include?(ProjectsHelperPatch)
       ProjectsHelper.prepend ProjectsHelperPatch
     end
+
+    unless Issue.included_modules.include?(IssuePatch)
+      Issue.prepend IssuePatch
+    end
   end
 
   # Checks a stored default against the target field's own validation.
@@ -47,5 +51,19 @@ module RedmineProjectCustomFieldDefaults
         "for custom field ##{custom_field.id}: #{errors.join(', ')}"
     )
     false
+  end
+
+  # Checks whether a custom value is locked by a project default for the
+  # given user, i.e. whether it should be excluded from the editable set.
+  #
+  # A field is locked when the effective default entry for its project has
+  # the locked flag set and the user does not hold the override permission.
+  def self.locked_for?(custom_value, project, user = nil)
+    return false if project.nil?
+
+    entry = project.effective_custom_field_default(custom_value.custom_field)
+    return false unless entry&.locked?
+
+    !(user || User.current).allowed_to?(:override_locked_project_custom_field_defaults, project)
   end
 end
