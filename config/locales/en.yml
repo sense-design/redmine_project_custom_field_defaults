@@ -4,3 +4,8 @@ en:
   text_custom_field_defaults_no_fields: "No issue custom fields are enabled for this project."
   text_custom_field_defaults_hint: "A default is only applied when a new issue is created and can be changed on the issue at any time. Leave a field empty to inherit the value of the parent project."
   text_custom_field_default_inherited: "Inherited from %{project}: %{value}"
+  label_custom_field_default_locked: "Locked"
+  text_custom_field_default_locked_inherited: "Locked (inherited)"
+  text_custom_field_default_locked_hint: "A locked field can no longer be changed on the issue, except by users who hold the \"Override locked project custom field defaults\" permission."
+  text_custom_field_default_locked_requires_value: "A default value is required to lock a field."
+  permission_override_locked_project_custom_field_defaults: "Override locked project custom field defaults"

@@ -18,6 +18,7 @@
         <th><%= l(:label_custom_field_plural) %></th>
         <th><%= l(:field_field_format) %></th>
         <th><%= l(:label_custom_field_default_value) %></th>
+        <th><%= l(:label_custom_field_default_locked) %></th>
       </tr>
       </thead>
       <tbody>
@@ -46,6 +47,12 @@
               </em>
             <% end %>
           </td>
+          <td class="center">
+            <%= check_box_tag "defaults[locked][#{field.id}]", '1', own&.locked? || false %>
+            <% if own.nil? && effective&.locked? %>
+              <em class="info"><%= l(:text_custom_field_default_locked_inherited) %></em>
+            <% end %>
+          </td>
         </tr>
       <% end %>
       </tbody>
@@ -53,5 +60,6 @@
 
     <p><%= submit_tag l(:button_save) %></p>
     <p><em class="info"><%= l(:text_custom_field_defaults_hint) %></em></p>
+    <p><em class="info"><%= l(:text_custom_field_default_locked_hint) %></em></p>
   <% end %>
 <% end %>

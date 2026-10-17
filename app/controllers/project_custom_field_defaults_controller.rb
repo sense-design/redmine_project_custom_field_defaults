@@ -3,8 +3,10 @@ class ProjectCustomFieldDefaultsController < ApplicationController
   before_action :authorize_defaults
 
   def update
-    submitted = params.fetch(:defaults, {}).permit!.to_h.fetch('custom_field_values', {})
-    messages  = ProjectCustomFieldDefault.replace_for(@project, submitted)
+    payload   = params.fetch(:defaults, {}).permit!.to_h
+    submitted = payload.fetch('custom_field_values', {})
+    locked    = payload.fetch('locked', {})
+    messages  = ProjectCustomFieldDefault.replace_for(@project, submitted, locked)
 
     if messages.empty?
       flash[:notice] = l(:notice_successful_update)
