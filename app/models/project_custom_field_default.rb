@@ -22,37 +22,38 @@ class ProjectCustomFieldDefault < ApplicationRecord
   # Expects a hash of custom field id => value and a hash of custom field id
   # => lock flag, both as submitted by the settings form. Returns an array
   # of error messages; if it is not empty, nothing has been written.
+  #
+  # The existing rows are deleted before the new ones are validated, because
+  # the uniqueness validation would otherwise reject every field that already
+  # has a stored row. On any validation error the transaction is rolled back,
+  # which restores the deleted rows.
   def self.replace_for(project, submitted, locked = {})
-    records  = []
-    messages = []
+    messages  = []
     bool_type = ActiveModel::Type::Boolean.new
-
-    (submitted.keys | locked.keys).each do |custom_field_id|
-      raw_value = submitted[custom_field_id]
-      value     = raw_value.is_a?(Array) ? raw_value.reject(&:blank?).first : raw_value
-      is_locked = bool_type.cast(locked[custom_field_id]) || false
-
-      # A blank, unlocked field simply has nothing to store.
-      next if value.blank? && !is_locked
-
-      record = new(project: project, custom_field_id: custom_field_id.to_i, value: value.to_s, locked: is_locked)
-
-      if record.valid?
-        records << record
-      else
-        label = record.custom_field&.name || custom_field_id
-        messages << "#{label}: #{record.errors.full_messages.join(', ')}"
-      end
-    end
-
-    return messages if messages.any?
 
     transaction do
       where(project_id: project.id).delete_all
-      records.each(&:save!)
+
+      (submitted.keys | locked.keys).each do |custom_field_id|
+        raw_value = submitted[custom_field_id]
+        value     = raw_value.is_a?(Array) ? raw_value.reject(&:blank?).first : raw_value
+        is_locked = bool_type.cast(locked[custom_field_id]) || false
+
+        # A blank, unlocked field simply has nothing to store.
+        next if value.blank? && !is_locked
+
+        record = new(project: project, custom_field_id: custom_field_id.to_i, value: value.to_s, locked: is_locked)
+
+        unless record.save
+          label = record.custom_field&.name || custom_field_id
+          messages << "#{label}: #{record.errors.full_messages.join(', ')}"
+        end
+      end
+
+      raise ActiveRecord::Rollback if messages.any?
     end
 
-    []
+    messages
   end
 
   private
